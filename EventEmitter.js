@@ -55,7 +55,8 @@
             } else {
                 this.events[eventName].push(handler);
             }
-            this.emit('newListener');
+            // 触发listener监听
+            this.emit('newListener', eventName, listener);
             return this;
         },
         once: function(eventName, listener) {
