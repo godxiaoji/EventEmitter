@@ -13,6 +13,14 @@
         console && console.warn && console.warn(text);
     }
 
+    function getNamespace(eventName) {
+        var arr = (eventName || '').split('.');
+        return {
+            eventName: arr[0],
+            namespace: arr[1] || null
+        };
+    }
+
     var EventEmitter = function() {
         this.events = {};
         this.guid = 0;
@@ -23,14 +31,21 @@
 
     EventEmitter.prototype = {
         on: function(eventName, listener, times, index) {
+            var namespace = getNamespace(eventName);
+            eventName = namespace.eventName;
+            namespace = namespace.namespace;
+
             var listenerCount = this.listenerCount(eventName);
             if (listenerCount >= this.maxListeners) {
                 warn('Failed to add listener: ' + (listenerCount + 1) + ' request listeners added. Use emitter.setMaxListeners() to increase limit.');
             }
+
             if (!isArray(this.events[eventName])) {
                 this.events[eventName] = [];
             }
+
             var handler = {
+                namespace: namespace,
                 uid: ++this.guid,
                 times: isNumeric(times) && times != 0 ? parseInt(times) : -1,
                 listener: listener
@@ -52,14 +67,20 @@
         prependOnceListener: function(eventName, listener) {
             return this.on(eventName, listener, 1, 0);
         },
-        removeListener: function(eventName, listener, uid) {
+        removeListener: function(eventName, listener) {console.log(eventName);
+            var namespace = getNamespace(eventName);
+            eventName = namespace.eventName;
+            namespace = namespace.namespace;
+
             var list = this.events[eventName];
             if (isArray(list)) {
-                if (listener || uid) {
-                    var i = list.length - 1;
+                if (listener || namespace) {
+                    var i = list.length - 1,
+                        item;
                     for (; i >= 0; i--) {
                         item = list[i];
-                        if (item.listener === listener || item.uid === uid) {
+                        if (listener === item.listener ||
+                            (namespace === item.namespace || namespace === 'listenerGuid' + item.uid)) {
                             list.splice(i, 1);
                         }
                     }
@@ -87,6 +108,10 @@
             }
         },
         emit: function(eventName) {
+            var namespace = getNamespace(eventName);
+            eventName = namespace.eventName;
+            namespace = namespace.namespace;
+
             if (isArray(this.events[eventName])) {
                 var params = [].slice.call(arguments, 1),
                     list = this.events[eventName],
@@ -96,12 +121,17 @@
 
                 for (; i < len; i++) {
                     item = list[i];
-                    item.listener.apply(this, params);
-                    if (item.times === 1) {
-                        // 删除该事件
-                        this.removeListener(eventName, null, item.uid);
-                    } else if (item.times > 1) {
-                        item.times--;
+                    if (namespace === null || namespace === item.namespace) {
+                        item.listener.apply(this, params);
+                        if (item.times === 1) {
+                            // 删除该事件
+                            this.removeListener(eventName + '.listenerGuid' + item.uid);
+                            // 数组被重置，调整遍历
+                            i--;
+                            len--;
+                        } else if (item.times > 1) {
+                            item.times--;
+                        }
                     }
                 }
             }
