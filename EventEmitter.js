@@ -67,7 +67,8 @@
         prependOnceListener: function(eventName, listener) {
             return this.on(eventName, listener, 1, 0);
         },
-        removeListener: function(eventName, listener) {console.log(eventName);
+        removeListener: function(eventName, listener) {
+            console.log(eventName);
             var namespace = getNamespace(eventName);
             eventName = namespace.eventName;
             namespace = namespace.namespace;
