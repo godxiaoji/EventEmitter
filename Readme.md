@@ -1,6 +1,14 @@
-# EventEmitter.js
+# wx-event-emitter
 
-An EventEmitter Based Client.
+EventEmitter for browser, Miniprogram(weapp/wxapp).
+
+## install
+
+To use this module directly (without browserify), install it:
+
+```bash
+npm install wx-event-emitter
+```
 
 ### Add Namespace
 
@@ -10,7 +18,3 @@ An EventEmitter Based Client.
 
 The API in line with Nodejs.
 [Nodejs](https://nodejs.org/api/events.html)
-
-### Author
-
-[Travis](http://travisup.com/)
