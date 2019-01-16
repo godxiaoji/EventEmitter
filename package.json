@@ -1,6 +1,6 @@
 {
   "name": "wx-event-emitter",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "EventEmitter for browser, Miniprogram(weapp/wxapp)",
   "main": "src/event-emitter.js",
   "scripts": {
