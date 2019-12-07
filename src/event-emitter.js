@@ -1,7 +1,7 @@
 /**
  * EventEmitter for browser
  * @author  Travis [godxiaoji@gmail.com]
- * @version 1.0.2
+ * @version 1.0.3
  * 
  * @see https://nodejs.org/api/events.html
  */
@@ -113,6 +113,7 @@
             if (listener === item.listener ||
               (namespace === item.namespace || namespace === 'listenerGuid' + item.uid)) {
               list.splice(i, 1);
+              this.emit('removeListener', eventName, item.listener);
             }
           }
         } else {
@@ -143,6 +144,8 @@
       eventName = namespace.eventName;
       namespace = namespace.namespace;
 
+      var hasListener = false;
+
       if (isArray(this.events[eventName])) {
         var params = [].slice.call(arguments, 1),
           list = this.events[eventName],
@@ -163,10 +166,12 @@
             } else if (item.times > 1) {
               item.times--;
             }
+
+            hasListener = true;
           }
         }
       }
-      return this;
+      return hasListener;
     },
     listenerCount: function (eventName) {
       return isArray(this.events[eventName]) ?
@@ -177,8 +182,10 @@
       return this.maxListeners;
     },
     setMaxListeners: function (n) {
-      if (isNumeric(n)) {
-        this.maxListeners = parseInt(n);
+      if (typeof n === 'number' && n >= 0) {
+        this.maxListeners = n;
+      } else {
+        throw new TypeError('The value of "n" is out of range. It must be a non-negative number')
       }
       return this;
     },
