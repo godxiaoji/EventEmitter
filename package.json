@@ -1,6 +1,6 @@
 {
   "name": "wx-event-emitter",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "EventEmitter for browser, Miniprogram(weapp/wxapp)",
   "main": "src/event-emitter.js",
   "scripts": {
@@ -30,6 +30,7 @@
     "@types/node": "^12.12.14",
     "chai": "^4.2.0",
     "mocha": "^6.2.2",
+    "ts-loader": "^6.2.1",
     "ts-node": "^8.5.4",
     "typescript": "^3.7.3",
     "webpack": "^4.41.2",
